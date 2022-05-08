@@ -50,7 +50,7 @@ const extractSeriesData = async (
 					const aServer = $(a).text() ?? "";
 					const data: Data = {
 						type: type,
-						subType: aLink,
+						subType: tdType,
 						dlLink: {
 							server: aServer,
 							link: aLink,
