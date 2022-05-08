@@ -15,6 +15,8 @@
 		"cheerio": "^1.0.0-rc.10",
 		"inquirer": "^8.2.4",
 		"node-fetch-commonjs": "^3.1.1",
+		"open": "^8.4.0",
+		"ora": "5.4.1",
 		"ts-node-dev": "^1.1.8",
 		"typescript": "^4.6.4"
 	}
