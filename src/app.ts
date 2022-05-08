@@ -1,32 +1,44 @@
 import { Data, getPostDetails, getPostsJson } from "./Drays";
 import inquirer from "inquirer";
+import { PostModelJson } from "./types/PostModelJson";
+
 const main = async () => {
-	const posts_json = await getPostsJson("uncharted");
-	if (posts_json.length > 0) {
-		const post_json = posts_json[0];
-		const post_link = post_json.link;
+	var posts_json: PostModelJson[] = [];
 
-		const dlLinks: Data[] = await getPostDetails(post_link);
-
-		inquirer
-			.prompt([
-				{
+	inquirer
+		.prompt([
+			{
+				type: "input",
+				name: "search",
+				message: "Search for movies :",
+				validatingText: "Searching...",
+				validate: async (value: string) => {
+					if (value.length <= 0) throw Error("Please enter a search term");
+					posts_json = await getPostsJson(value);
+					if (posts_json.length <= 0) throw Error("No results found");
+					return true;
+				},
+			},
+		])
+		.then((answers: any) => {
+			inquirer
+				.prompt({
 					type: "list",
-					name: "dlLink",
-					message: "Select a download link",
-					choices: dlLinks.map((dlLink) => {
+					name: "post",
+					loop: false,
+					message: "Select a movie :",
+					choices: posts_json.map((post: PostModelJson) => {
 						return {
-							name: `${dlLink.dlLink.server} - ${dlLink.dlLink.link} - ${dlLink.type} - ${dlLink.subType}`,
-							value: dlLink,
+							name: `${post.title.rendered}`,
+							value: post,
 						};
 					}),
-				},
-			])
-			.then((answers) => {
-				const dlLink = answers.dlLink;
-				console.log(dlLink);
-			});
-	}
+				})
+				.then(async ({ post }: { post: PostModelJson }) => {
+					const post_details = await getPostDetails(post.link);
+					console.log("done");
+				});
+		});
 };
 
 main();
