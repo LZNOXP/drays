@@ -39,7 +39,6 @@ const main = async () => {
 				.then(async ({ post }: { post: PostModelJson }) => {
 					const spinner = ora("Getting Download Link...").start();
 					const post_details = await getPostDetails(post.link);
-					console.log(post_details[0]);
 
 					spinner.stop();
 					inquirer
