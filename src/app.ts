@@ -1,6 +1,8 @@
 import { Data, getPostDetails, getPostsJson } from "./Drays";
 import inquirer from "inquirer";
 import { PostModelJson } from "./types/PostModelJson";
+import ora from "ora";
+import open from "open";
 
 const main = async () => {
 	var posts_json: PostModelJson[] = [];
@@ -35,8 +37,29 @@ const main = async () => {
 					}),
 				})
 				.then(async ({ post }: { post: PostModelJson }) => {
+					const spinner = ora("Getting Download Link...").start();
 					const post_details = await getPostDetails(post.link);
-					console.log("done");
+					console.log(post_details[0]);
+
+					spinner.stop();
+					inquirer
+						.prompt({
+							type: "list",
+							name: "download",
+							loop: false,
+							message: "Select a download link :",
+							choices: post_details.map((download: Data) => {
+								return {
+									name: `${download.subType} - ${download.dlLink.server} | ${download.type}`,
+									value: download,
+								};
+							}),
+						})
+						.then((ans) => {
+							const link = ans.download.dlLink.link;
+							console.log("Opening link : " + link);
+							open(link);
+						});
 				});
 		});
 };
