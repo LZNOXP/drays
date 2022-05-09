@@ -8,6 +8,24 @@ interface DataGroup {
 	[key: string]: Data[];
 }
 
+//groupBy with typed typescript
+function groupBy<T, K extends keyof T>(
+	array: T[],
+	key: K
+): { [key: string]: T[] } {
+	return array.reduce((acc: { [key: string]: T[] }, curr) => {
+		const keyValue = curr[key];
+		//@ts-ignore
+		if (!acc[keyValue]) {
+			//@ts-ignore
+			acc[keyValue] = [];
+		}
+		//@ts-ignore
+		acc[keyValue].push(curr);
+		return acc;
+	}, {});
+}
+
 const main = async () => {
 	var posts_json: PostModelJson[] = [];
 	var posts_details: Data[] = [];
@@ -60,14 +78,8 @@ const main = async () => {
 		inquirer.prompt(postQuestion).then(async ({ post }) => {
 			const spinner = ora("Getting Download Link...").start();
 			posts_details = await getPostDetails(post.link);
-			posts_details_subtype = posts_details.reduce(
-				(acc: DataGroup, curr: Data) => {
-					acc[curr.subType] = acc[curr.subType] || [];
-					acc[curr.subType].push(curr);
-					return acc;
-				},
-				{}
-			);
+			posts_details_subtype = groupBy(posts_details, "subType");
+
 			spinner.stop();
 			inquirer.prompt(downloadQuestion).then((ans) => {
 				inquirer
