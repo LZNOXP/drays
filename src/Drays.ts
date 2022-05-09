@@ -8,10 +8,8 @@ const posts_ep = wp_url + "posts";
 export interface Data {
 	type: string;
 	subType: string;
-	dlLink: {
-		server: string;
-		link: string;
-	};
+	server: string;
+	link: string;
 }
 const loadCheerio = async (url: string) => {
 	try {
@@ -51,10 +49,9 @@ const extractSeriesData = async (
 					const data: Data = {
 						type: type,
 						subType: tdType,
-						dlLink: {
-							server: aServer,
-							link: aLink,
-						},
+
+						server: aServer,
+						link: aLink,
 					};
 					onExtract(data);
 				});
@@ -66,7 +63,9 @@ const extractSeriesData = async (
 	var trType = "";
 	elem.each((i, tr) => {
 		if (trFirst) {
-			trType = $(tr).text();
+			trType = $(tr)
+				.text()
+				.replace(/(\r\n|\n|\r)/gm, "|");
 			trFirst = false;
 		} else {
 			const tds = $(tr).find("td");
@@ -85,7 +84,9 @@ const extractMovieData = async (
 	elem.each((i, div) => {
 		if (first) {
 			first = false;
-			type = $(div).text();
+			type = $(div)
+				.text()
+				.replace(/(\r\n|\n|\r)/gm, "|");
 		} else {
 			const subType = $(div).children().first().text();
 			const divs = $(div).children().last();
@@ -97,10 +98,8 @@ const extractMovieData = async (
 				onExtract({
 					type,
 					subType,
-					dlLink: {
-						link,
-						server,
-					},
+					link,
+					server,
 				});
 			});
 		}

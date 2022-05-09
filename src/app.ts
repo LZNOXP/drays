@@ -42,7 +42,7 @@ const main = async () => {
 		choices: () =>
 			posts_details.map((download: Data) => {
 				return {
-					name: `${download.subType} - ${download.dlLink.server} | ${download.type}`,
+					name: `${download.subType} - ${download.server} | ${download.type}`,
 					value: download,
 				};
 			}),
@@ -53,9 +53,9 @@ const main = async () => {
 			const spinner = ora("Getting Download Link...").start();
 			posts_details = await getPostDetails(post.link);
 			spinner.stop();
-			
+
 			inquirer.prompt(downloadQuestion).then((ans) => {
-				const link = ans.download.dlLink.link;
+				const link = ans.download.link;
 				console.log("Opening link : " + link);
 				open(link);
 			});
