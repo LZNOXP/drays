@@ -66,12 +66,6 @@ const main = async () => {
 			Object.keys(posts_details_subtype).map((key: string) => {
 				return { name: key, value: posts_details_subtype[key] };
 			}),
-		// posts_details.map((download: Data) => {
-		// 	return {
-		// 		name: `${download.subType} - ${download.server} | ${download.type}`,
-		// 		value: download,
-		// 	};
-		// }),
 	};
 
 	inquirer.prompt([searchQuestion]).then((answers: any) => {
@@ -82,30 +76,46 @@ const main = async () => {
 
 			spinner.stop();
 			inquirer.prompt(downloadQuestion).then((ans) => {
+				const dl: Data[] = ans.download;
+				const selectedTypes = groupBy(dl, "type");
 				inquirer
 					.prompt([
 						{
 							type: "list",
 							loop: "false",
-							name: "open",
+							name: "select",
 							message: "Select a download link :",
 							choices: (_) => {
-								return ans.download.map((download: Data) => {
+								return Object.keys(selectedTypes).map((key: string) => {
 									return {
-										name: `${download.subType} - ${download.server} | ${download.type}`,
-										value: download,
+										name: `${key}`,
+										value: selectedTypes[key],
 									};
 								});
 							},
 						},
 					])
 					.then((answers: any) => {
-						open(answers.open.link);
+						const downloadLinks: Data[] = answers.select;
+						inquirer
+							.prompt([
+								{
+									type: "list",
+									name: "open",
+									message: "Open in browser?",
+									choices: () =>
+										downloadLinks.map((dl: Data) => {
+											return {
+												name: `${dl.subType} - ${dl.server}`,
+												value: dl.link,
+											};
+										}),
+								},
+							])
+							.then((answers) => {
+								open(answers.open);
+							});
 					});
-
-				// const link = ans.download.link;
-				// console.log("Opening link : " + link);
-				// open(link);
 			});
 		});
 	});

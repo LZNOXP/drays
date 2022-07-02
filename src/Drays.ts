@@ -116,17 +116,14 @@ export const getPostDetails = async (post_link: string) => {
 	const details: Data[] = [];
 	const $ = await loadCheerio(post_link);
 
-	const runTimeElem = $("div.mr-4:nth-child(3)");
-	const isSeries = runTimeElem.text().includes("Eps");
-	if (isSeries) {
-		const tBodys = $("#main-content > div.text-sm.my-4.mb-4 > table > tbody");
-		tBodys.each((i, tbody) => {
-			const trs = $(tbody).find("tr");
-			extractSeriesData(trs, $, (data: Data) => {
-				details.push(data);
-			});
+	const tBodys = $("#main-content > div.text-sm.my-4.mb-4 > table > tbody");
+	tBodys.each((i, tbody) => {
+		const trs = $(tbody).find("tr");
+		extractSeriesData(trs, $, (data: Data) => {
+			details.push(data);
 		});
-	} else {
+	});
+	if (tBodys.length <= 0) {
 		const divs = $("#dl_tab");
 		divs.each((i, div) => {
 			const children = $(div).children();
